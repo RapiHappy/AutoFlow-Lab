@@ -2843,7 +2843,7 @@ function initEventListeners() {
   });
 
   document.getElementById('copyQrUrlBtn')?.addEventListener('click', () => {
-    const url = 'https://easy-bikes-cough.loca.lt';
+    const url = 'https://rapihappy.github.io/AutoFlow-Lab/';
     const copySuccess = () => {
       SoundSystem.playSuccess();
       const toast = document.getElementById('copyToastText');
