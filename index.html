@@ -1,0 +1,1755 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AutoFlow Lab — Интеллектуальная диспетчеризация очередей | Нигматдинов Раяз</title>
+  <meta name="description" content="Премиальная интерактивная платформа моделирования и автоматизации бизнес-процессов диспетчеризации заявок AutoFlow против FIFO." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236366f1'><path d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/></svg>" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            },
+            space: {
+              950: '#04060c',
+              900: '#060911',
+              850: '#090e1a',
+              800: '#0e1424',
+              700: '#151f38',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-space-900 text-slate-100 min-h-screen relative bg-grid-pattern bg-radial-glow antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- ============================================================
+       1. CINEMATIC QUANTUM PRELOADER (AAA STARTUP EXPERIENCE)
+       ============================================================ -->
+  <div id="sitePreloader" class="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-[#030611] overflow-hidden select-none">
+    
+    <!-- Cyber Grid & Scanline Background Overlay -->
+    <div class="preloader-grid absolute inset-0 pointer-events-none opacity-25"></div>
+    <div class="preloader-scanlines absolute inset-0 pointer-events-none opacity-30"></div>
+
+    <!-- Radiant Ambient Backlight Glows -->
+    <div class="absolute w-[500px] h-[500px] rounded-full bg-indigo-600/15 blur-[120px] pointer-events-none animate-pulse-slow"></div>
+    <div class="absolute w-[360px] h-[360px] rounded-full bg-emerald-500/10 blur-[100px] pointer-events-none"></div>
+
+    <!-- Skip Button (Top Right) -->
+    <div class="absolute top-6 right-6 z-20">
+      <button id="preloaderSkipBtn" class="flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-indigo-400/50 text-xs font-mono text-slate-400 hover:text-white transition active:scale-95 shadow-sm backdrop-blur-md">
+        <span>Пропустить интро</span>
+        <kbd class="px-1.5 py-0.5 text-[10px] bg-white/10 rounded border border-white/10 text-slate-300">Esc</kbd>
+      </button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="relative z-10 flex flex-col items-center justify-center max-w-xl w-full px-6">
+      
+      <!-- Quantum Reactor Core / Multi-Ring Gyroscope -->
+      <div class="relative w-64 h-64 flex items-center justify-center mb-8">
+        
+        <!-- HUD Corner Brackets -->
+        <div class="absolute -top-2 -left-2 w-5 h-5 border-t-2 border-l-2 border-indigo-500/50 pointer-events-none"></div>
+        <div class="absolute -top-2 -right-2 w-5 h-5 border-t-2 border-r-2 border-indigo-500/50 pointer-events-none"></div>
+        <div class="absolute -bottom-2 -left-2 w-5 h-5 border-b-2 border-l-2 border-indigo-500/50 pointer-events-none"></div>
+        <div class="absolute -bottom-2 -right-2 w-5 h-5 border-b-2 border-r-2 border-indigo-500/50 pointer-events-none"></div>
+
+        <!-- Outer Telemetry Radar Ring -->
+        <div class="absolute inset-0 rounded-full border border-indigo-500/25 border-dashed animate-spin-radar"></div>
+        <div class="absolute inset-2 rounded-full border border-white/5"></div>
+        
+        <!-- Micro-ticks at 4 cardinal coordinates -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-3.5 bg-indigo-400/80 rounded-sm shadow-sm shadow-indigo-500"></div>
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-2 h-3.5 bg-indigo-400/80 rounded-sm shadow-sm shadow-indigo-500"></div>
+        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-3.5 h-2 bg-indigo-400/80 rounded-sm shadow-sm shadow-indigo-500"></div>
+        <div class="absolute right-0 top-1/2 -translate-y-1/2 w-3.5 h-2 bg-indigo-400/80 rounded-sm shadow-sm shadow-indigo-500"></div>
+
+        <!-- Middle Counter-Rotating Notched Ring -->
+        <div class="absolute inset-5 rounded-full border-2 border-emerald-500/35 border-t-transparent border-b-transparent animate-spin-reverse-medium"></div>
+
+        <!-- SVG Circular Progress Meter (Dashoffset Driven) -->
+        <svg class="absolute inset-0 w-full h-full -rotate-90 pointer-events-none" viewBox="0 0 256 256">
+          <!-- Background Track -->
+          <circle cx="128" cy="128" r="110" fill="none" stroke="rgba(255, 255, 255, 0.06)" stroke-width="4.5" stroke-dasharray="4 6" />
+          <!-- Animated Dynamic Progress Circle (Circumference = 2 * PI * 110 ~= 691.15) -->
+          <circle id="preloaderProgressRing" cx="128" cy="128" r="110" fill="none" stroke="url(#preloaderGradient)" stroke-width="6" stroke-linecap="round" stroke-dasharray="691.15" stroke-dashoffset="691.15" style="filter: drop-shadow(0 0 14px rgba(99, 102, 241, 0.75)); will-change: stroke-dashoffset;" />
+          <defs>
+            <linearGradient id="preloaderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#818cf8" />
+              <stop offset="50%" stop-color="#c084fc" />
+              <stop offset="100%" stop-color="#34d399" />
+            </linearGradient>
+          </defs>
+        </svg>
+
+        <!-- Inner Energy Core -->
+        <div class="relative w-32 h-32 rounded-3xl bg-slate-950/90 backdrop-blur-xl border border-white/15 flex flex-col items-center justify-center shadow-2xl shadow-indigo-500/30">
+          <!-- Glowing Aura behind core -->
+          <div class="absolute inset-0 rounded-3xl bg-gradient-to-tr from-indigo-500/35 via-purple-500/25 to-emerald-500/25 blur-md animate-pulse"></div>
+          
+          <!-- Central Icon -->
+          <div class="relative z-10 w-11 h-11 rounded-2xl bg-gradient-to-br from-indigo-500/25 to-purple-500/25 border border-white/20 flex items-center justify-center mb-1">
+            <i data-lucide="zap" class="w-6 h-6 text-amber-400 fill-amber-400"></i>
+          </div>
+
+          <!-- Digital Monospace Percentage -->
+          <div class="relative z-10 flex items-baseline">
+            <span id="preloaderPercent" class="text-2xl font-mono font-black tracking-tight text-white">0</span>
+            <span class="text-sm font-mono text-emerald-400 font-bold ml-0.5">%</span>
+          </div>
+          
+          <div class="text-[9px] font-mono tracking-widest text-slate-400 uppercase mt-0.5">CORE ACTIVE</div>
+        </div>
+
+      </div>
+
+      <!-- App Title & Subtitle -->
+      <div class="text-center space-y-1.5 mb-6">
+        <div class="flex items-center justify-center space-x-2">
+          <span class="text-2xl font-black tracking-tight gradient-text-brand">AutoFlow Lab</span>
+        </div>
+        <p class="text-xs text-slate-400 font-mono flex items-center justify-center gap-2">
+          <span>Дискретно-событийное моделирование</span>
+          <span class="inline-block w-1 h-1 rounded-full bg-slate-600"></span>
+          <span class="text-slate-300">Нигматдинов Раяз</span>
+        </p>
+      </div>
+
+      <!-- Futuristic Telemetry Terminal Box -->
+      <div class="w-full bg-slate-950/90 rounded-2xl border border-white/10 p-4 backdrop-blur-md shadow-2xl space-y-2.5">
+        <div class="flex items-center justify-between border-b border-white/5 pb-2">
+          <div class="flex items-center space-x-2">
+            <div class="flex space-x-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500/60 inline-block"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500/60 inline-block"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500/60 inline-block"></span>
+            </div>
+            <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider pl-1.5">Boot Telemetry Console</span>
+          </div>
+          <span id="preloaderPhaseTag" class="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 font-semibold">INITIALIZING</span>
+        </div>
+
+        <!-- Terminal Output Stream -->
+        <div id="preloaderTerminal" class="h-20 font-mono text-[11.5px] leading-relaxed text-slate-300 overflow-hidden flex flex-col justify-end space-y-1">
+          <div class="text-slate-500">[SYS_BOOT] Запуск микроядра дискретного таймера...</div>
+        </div>
+
+        <!-- Soundwave Equalizer Bars -->
+        <div class="flex items-center justify-between pt-1 border-t border-white/5">
+          <div class="flex items-center space-x-1.5">
+            <div class="w-1 h-2.5 bg-indigo-500 rounded-full animate-eq-bar-1"></div>
+            <div class="w-1 h-4 bg-purple-500 rounded-full animate-eq-bar-2"></div>
+            <div class="w-1 h-2 bg-emerald-400 rounded-full animate-eq-bar-3"></div>
+            <div class="w-1 h-3.5 bg-cyan-400 rounded-full animate-eq-bar-4"></div>
+            <div class="w-1 h-2 bg-indigo-400 rounded-full animate-eq-bar-5"></div>
+          </div>
+          <div class="text-[10px] font-mono text-slate-500 tracking-wider">
+            SHIFT: <span class="text-emerald-400 font-semibold">480 MIN</span> | QUEUE: <span class="text-indigo-400 font-semibold">FIFO vs AUTOFLOW</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Interactive Background Particles Canvas -->
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- Ambient Light Orbs (Fluid Cosmic Aurora) -->
+  <div class="pointer-events-none fixed inset-0 overflow-hidden -z-10">
+    <div class="aurora-orb-1 absolute -top-40 left-1/4 w-[36rem] h-[36rem] bg-indigo-600/20 rounded-full blur-[150px]"></div>
+    <div class="aurora-orb-2 absolute top-1/3 -right-20 w-[38rem] h-[38rem] bg-emerald-500/15 rounded-full blur-[160px]"></div>
+    <div class="aurora-orb-3 absolute bottom-10 left-1/3 w-[34rem] h-[34rem] bg-purple-600/15 rounded-full blur-[140px]"></div>
+  </div>
+
+  <!-- STICKY HEADER (CLEANED UP & POLISHED) -->
+  <header class="sticky top-0 z-40 glass-header page-reveal-header">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+      
+      <!-- Brand & Author Signature -->
+      <div class="flex items-center space-x-3.5">
+        <div class="relative flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-500 via-purple-500 to-emerald-400 p-[1.5px] shadow-lg shadow-indigo-500/25">
+          <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+            <i data-lucide="zap" class="w-6 h-6 text-amber-400 fill-amber-400"></i>
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-xl font-black tracking-tight gradient-text-brand">AutoFlow Lab</span>
+          </div>
+          <p class="text-xs text-slate-400 flex items-center gap-1.5 mt-0.5">
+            <span data-i18n="headerAuthorLabel">Исследовательский проект</span>
+            <span class="inline-block w-1 h-1 rounded-full bg-slate-600"></span>
+            <span class="text-slate-200 font-semibold" data-i18n="headerAuthorName">Нигматдинов Раяз</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Header Controls: Lang + Sound + QR + Tour + About -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        
+        <!-- Bilingual Language Switcher: RU | TAT -->
+        <div class="flex items-center p-0.5 rounded-xl bg-slate-900/90 border border-white/10 shadow-sm" id="langSwitcherContainer">
+          <button id="langRuBtn" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all duration-200 bg-indigo-600 text-white shadow-md shadow-indigo-600/30" title="Русский язык">
+            RU
+          </button>
+          <button id="langTatBtn" class="px-2.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all duration-200 text-slate-400 hover:text-white" title="Татар теле">
+            TAT
+          </button>
+        </div>
+
+        <!-- Robust Sound Toggle Button (Pure SVG, 0 bugs) -->
+        <button id="toggleSoundBtn" class="flex items-center justify-center w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 hover:border-indigo-400/40 transition active:scale-95 shadow-sm" title="Звуковые эффекты / Тавыш">
+          <!-- Sound ON SVG -->
+          <svg id="soundSvgOn" class="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <!-- Sound OFF SVG -->
+          <svg id="soundSvgOff" class="w-4 h-4 text-slate-500 hidden" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </button>
+
+        <!-- QR Code Modal Trigger -->
+        <button id="openQrBtn" class="flex items-center space-x-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 hover:border-emerald-400/60 transition active:scale-95 shadow-sm" title="QR-код для смартфонов / Смартфон өчен QR-код">
+          <i data-lucide="qr-code" class="w-4 h-4 text-emerald-400"></i>
+          <span class="hidden sm:inline font-mono" data-i18n="qrBtn">📱 QR-код</span>
+        </button>
+
+        <!-- Interactive Tour Trigger -->
+        <button id="startTourBtn" class="flex items-center space-x-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-300 border border-indigo-500/30 hover:border-indigo-400/60 transition active:scale-95 shadow-sm">
+          <i data-lucide="compass" class="w-4 h-4 text-indigo-400"></i>
+          <span class="hidden md:inline" data-i18n="tourBtn">Обучающий тур</span>
+        </button>
+
+        <!-- About Modal Trigger -->
+        <button id="openAboutBtn" class="flex items-center space-x-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold bg-white/5 hover:bg-white/10 text-slate-200 border border-white/10 hover:border-white/20 transition active:scale-95 shadow-sm">
+          <i data-lucide="book-open" class="w-4 h-4 text-emerald-400"></i>
+          <span class="hidden md:inline" data-i18n="aboutBtn">О формуле</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- MAIN WRAPPER -->
+  <main class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6 page-reveal-main">
+
+    <!-- HERO INTRO BANNER -->
+    <div class="relative overflow-hidden rounded-3xl glass-panel p-6 sm:p-8 border border-white/10 bg-gradient-to-r from-slate-900/95 via-slate-900/80 to-indigo-950/40 shadow-2xl">
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-2.5 max-w-3xl">
+          <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-gradient-to-r from-indigo-500/15 to-emerald-500/15 border border-indigo-500/30 text-indigo-300 text-xs font-mono font-medium">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-indigo-400"></i>
+            <span>Симулятор динамической диспетчеризации & ROI-акселератор</span>
+          </div>
+          <h1 class="text-2xl sm:text-4xl font-black tracking-tight text-white leading-tight" data-i18n="heroTitle">
+            Спасение VIP-клиентов и устранение очередей с алгоритмом <span class="gradient-text-brand">AutoFlow</span>
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed" data-i18n="heroDesc">
+            Классический принцип <strong class="text-rose-400 font-mono">FIFO</strong> («первым пришёл — первым обслужен») не учитывает ценность клиента и ведёт к массовым срывам дедлайнов. Умный алгоритм <strong class="text-emerald-400">AutoFlow</strong> непрерывно взвешивает маржинальность, остаток времени до дедлайна и защиту от бесконечного ожидания.
+          </p>
+        </div>
+
+        <!-- Metric Highlight Cards in Hero -->
+        <div class="grid grid-cols-2 gap-3 shrink-0">
+          <div class="bg-slate-950/60 border border-emerald-500/30 rounded-2xl p-4 text-center min-w-[135px]">
+            <span class="text-3xl font-black font-mono text-emerald-400 block" id="heroSavedRate">0.0%</span>
+            <span class="text-[11px] font-medium text-slate-400 mt-0.5 block" data-i18n="heroKpi1">Срыв дедлайнов VIP</span>
+          </div>
+          <div class="bg-slate-950/60 border border-indigo-500/30 rounded-2xl p-4 text-center min-w-[135px]">
+            <span class="text-3xl font-black font-mono text-indigo-300 block" id="heroSpeedup">6.2x</span>
+            <span class="text-[11px] font-medium text-slate-400 mt-0.5 block" data-i18n="heroKpi2">Ускорение отклика</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Ticker Bar -->
+      <div class="mt-6 pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-slate-400">
+        <div class="flex items-center space-x-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span data-i18n="heroTicker1">Доказанный эффект: сокращение срывов VIP с 70%+ до нуля</span>
+        </div>
+        <div class="flex items-center space-x-4">
+          <span class="text-indigo-300" data-i18n="heroTicker2">★ Triage-защита от цепной реакции</span>
+          <span class="text-emerald-300" data-i18n="heroTicker3">★ Starvation-защита обычных клиентов</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN NAVIGATION TABS (MODE SWITCHER) -->
+    <div class="flex items-center space-x-2 overflow-x-auto pb-2 border-b border-white/5">
+      <button class="nav-tab-btn active px-4 py-2.5 rounded-xl border border-white/10 text-xs sm:text-sm font-semibold flex items-center space-x-2 whitespace-nowrap" data-tab="simulation">
+        <i data-lucide="cpu" class="w-4 h-4 text-indigo-400"></i>
+        <span data-i18n="tab1">1. Лаборатория Симуляции</span>
+      </button>
+
+      <button class="nav-tab-btn px-4 py-2.5 rounded-xl border border-white/10 text-xs sm:text-sm font-semibold flex items-center space-x-2 whitespace-nowrap text-slate-400 hover:text-white" data-tab="race">
+        <i data-lucide="play-circle" class="w-4 h-4 text-emerald-400"></i>
+        <span data-i18n="tab2">2. Живая гонка потоков (Визуализатор)</span>
+      </button>
+
+      <button class="nav-tab-btn px-4 py-2.5 rounded-xl border border-white/10 text-xs sm:text-sm font-semibold flex items-center space-x-2 whitespace-nowrap text-slate-400 hover:text-white" data-tab="roi">
+        <i data-lucide="circle-dollar-sign" class="w-4 h-4 text-amber-400"></i>
+        <span data-i18n="tab3">3. Бизнес-Калькулятор ROI</span>
+      </button>
+
+      <button class="nav-tab-btn px-4 py-2.5 rounded-xl border border-white/10 text-xs sm:text-sm font-semibold flex items-center space-x-2 whitespace-nowrap text-slate-400 hover:text-white" data-tab="academy">
+        <i data-lucide="graduation-cap" class="w-4 h-4 text-purple-400"></i>
+        <span data-i18n="tab4">4. Академия Автоматизации Бизнеса</span>
+      </button>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 1: SIMULATION LAB & METRICS -->
+    <!-- ============================================================ -->
+    <div id="tab-simulation" class="tab-pane space-y-6">
+      
+      <!-- Preset Scenarios Bar -->
+      <div class="flex items-center justify-between bg-slate-950/40 p-3 rounded-2xl border border-white/5">
+        <div class="flex items-center space-x-2 text-xs text-slate-400 font-medium">
+          <i data-lucide="wand-2" class="w-4 h-4 text-indigo-400"></i>
+          <span data-i18n="presetLabel">Быстрые сценарии нагрузки:</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button class="preset-chip text-xs px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 hover:border-indigo-500 text-slate-300 transition flex items-center gap-1.5 font-medium" data-preset="standard">
+            <i data-lucide="sliders" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span data-i18n="presetStandard">Стандартный день</span>
+          </button>
+          <button class="preset-chip text-xs px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 hover:border-amber-500 text-slate-300 transition flex items-center gap-1.5 font-medium" data-preset="rush">
+            <i data-lucide="flame" class="w-3.5 h-3.5 text-amber-400"></i>
+            <span data-i18n="presetRush">Пиковый наплыв</span>
+          </button>
+          <button class="preset-chip text-xs px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 hover:border-rose-500 text-slate-300 transition flex items-center gap-1.5 font-medium" data-preset="stress">
+            <i data-lucide="alert-triangle" class="w-3.5 h-3.5 text-rose-400"></i>
+            <span data-i18n="presetStress">Дефицит операторов</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+        <!-- LEFT COLUMN: CONTROL CENTER (4 COLS) -->
+        <section class="lg:col-span-4 space-y-6" id="tourStepControlCenter">
+          
+          <div class="glass-panel rounded-3xl p-6 space-y-6 border border-white/10 shadow-2xl relative overflow-hidden">
+            
+            <div class="flex items-center justify-between border-b border-white/5 pb-4">
+              <div class="flex items-center space-x-2.5">
+                <div class="p-2 rounded-xl bg-indigo-500/15 text-indigo-400 border border-indigo-500/30">
+                  <i data-lucide="settings-2" class="w-5 h-5"></i>
+                </div>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <h2 class="text-base font-bold text-white tracking-tight" data-i18n="controlTitle">Панель управления</h2>
+                    <span class="inline-flex items-center space-x-1 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-[10px] font-mono text-emerald-300 animate-pulse-live">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      <span>Live React</span>
+                    </span>
+                  </div>
+                  <p class="text-xs text-slate-400" data-i18n="controlSubtitle">Параметры входящего потока</p>
+                </div>
+              </div>
+              <span class="text-xs font-mono px-2.5 py-1 rounded-lg bg-slate-800 text-slate-400 border border-slate-700" id="seedDisplay">Seed: #4242</span>
+            </div>
+
+            <!-- SLIDER 1: Request Flow -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-medium text-slate-300 flex items-center gap-1.5">
+                  <i data-lucide="inbox" class="w-3.5 h-3.5 text-indigo-400"></i>
+                  <span data-i18n="flowSliderLabel">Поток обращений за смену</span>
+                </span>
+                <span id="ticketsCountValue" class="font-mono font-bold text-indigo-400 bg-indigo-950/60 border border-indigo-800/50 px-2 py-0.5 rounded text-xs">100 шт</span>
+              </div>
+              <input type="range" id="ticketsCountSlider" min="50" max="300" step="10" value="100" />
+              <div class="flex justify-between text-[10px] font-mono text-slate-500">
+                <span>50</span>
+                <span>150</span>
+                <span>300</span>
+              </div>
+            </div>
+
+            <!-- SLIDER 2: VIP Share -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-medium text-slate-300 flex items-center gap-1.5">
+                  <i data-lucide="crown" class="w-3.5 h-3.5 text-amber-400"></i>
+                  <span data-i18n="vipShareSliderLabel">Доля VIP-клиентов</span>
+                </span>
+                <span id="vipShareValue" class="font-mono font-bold text-amber-400 bg-amber-950/60 border border-amber-800/50 px-2 py-0.5 rounded text-xs">20%</span>
+              </div>
+              <input type="range" id="vipShareSlider" min="5" max="50" step="5" value="20" class="slider-amber" />
+              <div class="flex justify-between text-[10px] font-mono text-slate-500">
+                <span>5%</span>
+                <span>25%</span>
+                <span>50%</span>
+              </div>
+            </div>
+
+            <!-- SLIDER 3: Operators Staff -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <span class="font-medium text-slate-300 flex items-center gap-1.5">
+                  <i data-lucide="users" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span data-i18n="operatorsSliderLabel">Штат операторов</span>
+                </span>
+                <span id="operatorsCountValue" class="font-mono font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/50 px-2 py-0.5 rounded text-xs">2 чел</span>
+              </div>
+              <input type="range" id="operatorsCountSlider" min="1" max="6" step="1" value="2" class="slider-emerald" />
+              <div class="flex justify-between text-[10px] font-mono text-slate-500">
+                <span>1 чел</span>
+                <span>3 чел</span>
+                <span>6 чел</span>
+              </div>
+            </div>
+
+            <!-- FORMULA WEIGHTS ACCORDION -->
+            <div class="pt-2 border-t border-white/5 space-y-3.5" id="tourStepWeights">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                  <i data-lucide="sliders-horizontal" class="w-3.5 h-3.5 text-indigo-400"></i>
+                  <span data-i18n="weightsLabel">Весовые коэффициенты AutoFlow</span>
+                </span>
+                <button id="resetWeightsBtn" class="text-[11px] font-mono text-indigo-400 hover:text-indigo-300 hover:underline" data-i18n="resetWeightsBtn">
+                  Сброс (50/30/20)
+                </button>
+              </div>
+
+              <!-- AI Pareto Weight Optimizer Button -->
+              <button id="aiOptimizeWeightsBtn" class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-indigo-900/60 via-purple-900/60 to-emerald-900/60 hover:from-indigo-800/80 hover:to-emerald-800/80 border border-indigo-400/40 text-xs text-white font-medium flex items-center justify-center space-x-2 transition active:scale-95 shadow-sm group">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-300 animate-pulse"></i>
+                <span class="font-semibold" data-i18n="aiOptimizerBtn">⚡ AI Optimizer (Подобрать идеальные веса)</span>
+              </button>
+
+              <!-- Weight 1: VIP Priority -->
+              <div class="space-y-1.5 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/70">
+                <div class="flex justify-between text-[11px]">
+                  <span class="text-slate-300" data-i18n="weightVipLabel">w₁ (Статус VIP):</span>
+                  <span id="weightVipVal" class="font-mono font-bold text-amber-400">50</span>
+                </div>
+                <input type="range" id="weightVipSlider" min="0" max="100" step="5" value="50" class="slider-amber" />
+              </div>
+
+              <!-- Weight 2: Urgency Reaction -->
+              <div class="space-y-1.5 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/70">
+                <div class="flex justify-between text-[11px]">
+                  <span class="text-slate-300" data-i18n="weightUrgencyLabel">w₂ (Горящий дедлайн):</span>
+                  <span id="weightUrgencyVal" class="font-mono font-bold text-indigo-400">30</span>
+                </div>
+                <input type="range" id="weightUrgencySlider" min="0" max="100" step="5" value="30" />
+              </div>
+
+              <!-- Weight 3: Starvation Protection -->
+              <div class="space-y-1.5 bg-slate-950/40 p-2.5 rounded-xl border border-slate-800/70">
+                <div class="flex justify-between text-[11px]">
+                  <span class="text-slate-300" data-i18n="weightWaitLabel">w₃ (Анти-голодание):</span>
+                  <span id="weightWaitVal" class="font-mono font-bold text-emerald-400">20</span>
+                </div>
+                <input type="range" id="weightWaitSlider" min="0" max="100" step="5" value="20" class="slider-emerald" />
+              </div>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="pt-2 space-y-2.5">
+              <button id="runSimulationBtn" class="w-full relative group overflow-hidden rounded-2xl p-[2px] focus:outline-none focus:ring-2 focus:ring-indigo-400 active:scale-[0.98] transition-all duration-200">
+                <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500 rounded-2xl group-hover:opacity-100 transition duration-300 animate-pulse-glow"></div>
+                <div class="relative px-6 py-3 rounded-[14px] bg-slate-950 text-white font-bold flex items-center justify-center space-x-2.5 group-hover:bg-opacity-80 transition duration-200">
+                  <i data-lucide="play" class="w-4 h-4 text-emerald-400 fill-emerald-400"></i>
+                  <span class="text-sm tracking-wide uppercase font-mono" data-i18n="runSimulationBtn">Запустить симуляцию</span>
+                </div>
+              </button>
+
+              <!-- Secondary Actions: Seed + Export -->
+              <div class="grid grid-cols-2 gap-2">
+                <button id="newSeedBtn" class="flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 text-slate-200 border border-slate-700 text-xs font-medium transition active:scale-95 shadow-sm">
+                  <i data-lucide="dice-5" class="w-3.5 h-3.5 text-purple-400 shrink-0"></i>
+                  <span class="truncate" data-i18n="newSeedBtn">Новый поток</span>
+                </button>
+
+                <button id="exportCsvBtn" class="flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-slate-800/90 hover:bg-slate-700/90 text-slate-200 border border-slate-700 text-xs font-medium transition active:scale-95 shadow-sm">
+                  <i data-lucide="download" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+                  <span class="truncate" data-i18n="exportCsvBtn">Экспорт CSV</span>
+                </button>
+              </div>
+
+              <!-- High-Value Business Actions: Custom CSV Upload + Executive PDF Audit -->
+              <div class="grid grid-cols-2 gap-2">
+                <label for="customCsvInput" class="cursor-pointer flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-indigo-950/40 hover:bg-indigo-900/50 text-indigo-300 border border-indigo-500/30 text-xs font-medium transition active:scale-95 shadow-sm">
+                  <i data-lucide="file-up" class="w-3.5 h-3.5 text-cyan-400 shrink-0"></i>
+                  <span class="truncate" data-i18n="customCsvLabel">Загрузить CSV</span>
+                  <input type="file" id="customCsvInput" accept=".csv" class="hidden" />
+                </label>
+
+                <button id="openAuditModalBtn" class="flex items-center justify-center space-x-1.5 py-2 px-2.5 rounded-xl bg-amber-950/40 hover:bg-amber-900/50 text-amber-300 border border-amber-500/30 text-xs font-medium transition active:scale-95 shadow-sm">
+                  <i data-lucide="file-check-2" class="w-3.5 h-3.5 text-amber-400 shrink-0"></i>
+                  <span class="truncate" data-i18n="openAuditModalBtn">Акт для CEO</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- REAL COMPANY DATASETS QUICK BAR -->
+            <div class="space-y-1.5 pt-2 border-t border-white/5">
+              <div class="flex items-center justify-between text-[10px] text-slate-400 font-mono">
+                <span class="uppercase tracking-wider" data-i18n="companyCasesLabel">КЕЙСЫ КОМПАНИЙ:</span>
+                <span id="activeDatasetLabel" class="text-emerald-400 font-semibold truncate max-w-[130px]">Синтетический (100)</span>
+              </div>
+              <div class="grid grid-cols-3 gap-1 text-[11px]">
+                <button class="dataset-preset-btn py-1 px-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-slate-300 transition text-center truncate hover:border-indigo-400/50" data-dataset="ozon" title="OZON: 150 заказов пика распродажи">
+                  📦 OZON (150)
+                </button>
+                <button class="dataset-preset-btn py-1 px-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-slate-300 transition text-center truncate hover:border-amber-400/50" data-dataset="tbank" title="Т-Банк Премиум: 100 тикетов, жесткий VIP SLA">
+                  💳 Т-Банк (100)
+                </button>
+                <button class="dataset-preset-btn py-1 px-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 border border-slate-800 text-slate-300 transition text-center truncate hover:border-emerald-400/50" data-dataset="delivery" title="Яндекс Доставка: 140 курьерских заказов">
+                  🚗 Доставка (140)
+                </button>
+              </div>
+            </div>
+
+            <!-- Shift Constants Note -->
+            <div class="bg-indigo-950/20 border border-indigo-500/20 rounded-2xl p-3.5 text-xs text-slate-400 space-y-1">
+              <div class="flex items-center justify-between text-slate-300 font-medium">
+                <span data-i18n="quickShift">Смена: 8 часов (480 мин)</span>
+                <span data-i18n="quickVipSla">SLA VIP: 25 мин</span>
+              </div>
+              <div class="flex items-center justify-between text-slate-400">
+                <span data-i18n="quickServiceTime">Обслуживание: ~9.2 мин</span>
+                <span data-i18n="quickStdSla">SLA Стандарт: 60 мин</span>
+              </div>
+            </div>
+
+          </div>
+
+        </section>
+
+        <!-- RIGHT COLUMN: RESULTS DASHBOARD (8 COLS) -->
+        <section class="lg:col-span-8 space-y-6">
+
+          <!-- 4 KPI CARDS IN A ROW (SPACIOUS, ZERO COLLISION, RESPONSIVE 2x2 ON LAPTOPS, 4 ON 1400PX+) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 min-[1400px]:grid-cols-4 gap-4" id="tourStepKpi">
+            
+            <!-- KPI 1: VIP Breach Rate -->
+            <div class="glass-panel glass-panel-hover rounded-2xl p-4 sm:p-5 border border-white/10 relative overflow-hidden group flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between text-xs text-slate-300 mb-2">
+                  <span class="font-semibold tracking-tight text-white/95" data-i18n="kpiVipBreachTitle">Срыв дедлайнов VIP</span>
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 whitespace-nowrap">SLA ≤ 25м</span>
+                    <span class="p-1 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                      <i data-lucide="crown" class="w-3.5 h-3.5"></i>
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="space-y-0.5">
+                  <div class="text-3xl font-extrabold font-mono text-emerald-400" id="kpiVipBreachAutoFlow">0.0%</div>
+                  <div class="text-xs text-slate-400 font-mono flex items-center gap-1 whitespace-nowrap">
+                    <span data-i18n="kpiWasInFifo">Было в FIFO:</span>
+                    <span class="line-through text-slate-500 font-semibold" id="kpiVipBreachFifo">71.4%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-2 border-t border-white/5 flex items-center justify-between gap-1.5 flex-nowrap">
+                <span id="kpiVipDeltaBadge" class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-mono font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 whitespace-nowrap shrink-0">
+                  <span id="kpiVipDeltaText">↓ -71.4%</span>
+                </span>
+                <span class="text-[11px] text-emerald-400 font-medium whitespace-nowrap shrink-0" data-i18n="kpiVipSavedText">Спасено 100% ⚡</span>
+              </div>
+              <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-500 to-emerald-400"></div>
+            </div>
+
+            <!-- KPI 2: Overall SLA Breach Rate -->
+            <div class="glass-panel glass-panel-hover rounded-2xl p-4 sm:p-5 border border-white/10 relative overflow-hidden group flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between text-xs text-slate-300 mb-2">
+                  <span class="font-semibold tracking-tight text-white/95" data-i18n="kpiTotalBreachTitle">Общий срыв SLA</span>
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 whitespace-nowrap" data-i18n="kpiAllTickets">Все тикеты</span>
+                    <span class="p-1 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                      <i data-lucide="shield-alert" class="w-3.5 h-3.5"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="space-y-0.5">
+                  <div class="text-3xl font-extrabold font-mono text-indigo-300" id="kpiTotalBreachAutoFlow">25.0%</div>
+                  <div class="text-xs text-slate-400 font-mono flex items-center gap-1 whitespace-nowrap">
+                    <span data-i18n="kpiWasInFifo">Было в FIFO:</span>
+                    <span class="line-through text-slate-500 font-semibold" id="kpiTotalBreachFifo">64.0%</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-2 border-t border-white/5 flex items-center justify-between gap-1.5 flex-nowrap">
+                <span id="kpiTotalDeltaBadge" class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-mono font-semibold bg-indigo-500/15 text-indigo-300 border border-indigo-500/30 whitespace-nowrap shrink-0">
+                  <span id="kpiTotalDeltaText">↓ -39.0%</span>
+                </span>
+                <span class="text-[11px] text-indigo-300 font-medium whitespace-nowrap shrink-0" data-i18n="kpiRiskDropText">Снижение риска</span>
+              </div>
+              <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-indigo-500 to-emerald-400"></div>
+            </div>
+
+            <!-- KPI 3: Avg VIP Wait Time -->
+            <div class="glass-panel glass-panel-hover rounded-2xl p-4 sm:p-5 border border-white/10 relative overflow-hidden group flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between text-xs text-slate-300 mb-2">
+                  <span class="font-semibold tracking-tight text-white/95" data-i18n="kpiVipWaitTitle">Ожидание VIP</span>
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 whitespace-nowrap" data-i18n="kpiAverage">Среднее</span>
+                    <span class="p-1 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">
+                      <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="space-y-0.5">
+                  <div class="text-3xl font-extrabold font-mono text-white" id="kpiVipWaitAutoFlow">2.5 мин</div>
+                  <div class="text-xs text-slate-400 font-mono flex items-center gap-1 whitespace-nowrap">
+                    <span data-i18n="kpiWasInFifo">Было в FIFO:</span>
+                    <span class="line-through text-slate-500 font-semibold" id="kpiVipWaitFifo">75.1 мин</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-2 border-t border-white/5 flex items-center justify-between gap-1.5 flex-nowrap">
+                <span id="kpiSpeedupBadge" class="inline-flex items-center px-2 py-0.5 rounded-lg text-xs font-mono font-semibold bg-purple-500/15 text-purple-300 border border-purple-500/30 whitespace-nowrap shrink-0">
+                  <span id="kpiSpeedupText">⚡ 30.0x быстрее</span>
+                </span>
+                <span class="text-[11px] text-purple-300 font-medium whitespace-nowrap shrink-0" data-i18n="kpiNoDelayText">Без задержек</span>
+              </div>
+              <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-purple-500 to-indigo-500"></div>
+            </div>
+
+            <!-- KPI 4: Operator Utilization -->
+            <div class="glass-panel glass-panel-hover rounded-2xl p-4 sm:p-5 border border-white/10 relative overflow-hidden group flex flex-col justify-between space-y-3">
+              <div>
+                <div class="flex items-center justify-between text-xs text-slate-300 mb-2">
+                  <span class="font-semibold tracking-tight text-white/95" data-i18n="kpiUtilizationTitle">Загрузка операторов</span>
+                  <div class="flex items-center gap-1.5 shrink-0">
+                    <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 whitespace-nowrap" data-i18n="kpiShift">Смена</span>
+                    <span class="p-1 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="space-y-0.5">
+                  <div class="text-3xl font-extrabold font-mono text-emerald-400" id="kpiUtilization">84.4%</div>
+                  <div class="text-xs text-slate-400 font-mono flex items-center gap-1 whitespace-nowrap">
+                    <span data-i18n="kpiWorkedTime">Отработано:</span>
+                    <span class="text-slate-300 font-semibold" id="kpiTotalWorkTime">924 мин</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-1.5 pt-2 border-t border-white/5">
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                  <div id="kpiUtilizationBar" class="h-full bg-gradient-to-r from-emerald-500 to-indigo-500 rounded-full transition-all duration-700" style="width: 84.4%"></div>
+                </div>
+                <div class="flex justify-between items-center text-xs whitespace-nowrap gap-2">
+                  <span id="kpiStaffStatus" class="text-emerald-400 font-medium truncate" data-i18n="kpiStaffStatusOpt">Оптимальная нагрузка</span>
+                  <span class="text-slate-500 font-mono text-[11px] shrink-0">480м макс</span>
+                </div>
+              </div>
+              <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-emerald-400 to-indigo-500"></div>
+            </div>
+
+          </div>
+
+          <!-- TWO INTERACTIVE CHARTS -->
+          <div class="grid grid-cols-1 xl:grid-cols-2 gap-6" id="tourStepCharts">
+
+            <!-- Chart 1: Bar Chart (FIFO vs AutoFlow) -->
+            <div class="glass-panel rounded-3xl p-5 border border-white/10 space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 rounded-full bg-indigo-500"></div>
+                  <h3 class="text-sm font-bold text-white tracking-tight" data-i18n="chartBarTitle">Сравнение ключевых метрик: FIFO vs AutoFlow</h3>
+                </div>
+                <span class="text-[11px] font-mono text-slate-400 px-2.5 py-0.5 rounded-lg bg-slate-800">Bar Comparison</span>
+              </div>
+              <div class="relative h-64 w-full">
+                <canvas id="comparisonBarChart"></canvas>
+              </div>
+            </div>
+
+            <!-- Chart 2: Line Chart (Hourly Dynamics) -->
+            <div class="glass-panel rounded-3xl p-5 border border-white/10 space-y-3">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <div class="w-2 h-2 rounded-full bg-emerald-500"></div>
+                  <h3 class="text-sm font-bold text-white tracking-tight" data-i18n="chartLineTitle">Динамика нагрузки и очереди по часам (09:00 - 17:00)</h3>
+                </div>
+                <span class="text-[11px] font-mono text-slate-400 px-2.5 py-0.5 rounded-lg bg-slate-800">Shift Timeline</span>
+              </div>
+              <div class="relative h-64 w-full">
+                <canvas id="timelineLineChart"></canvas>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- WHAT-IF EXECUTIVE DECISION MATRIX (SOLVING BUSINESS DILEMMA) -->
+          <div class="glass-panel rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4 relative overflow-hidden bg-gradient-to-b from-slate-900/90 to-slate-950/80 shadow-xl">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
+              <div class="space-y-0.5">
+                <div class="flex items-center space-x-2">
+                  <span class="p-1 rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                    <i data-lucide="scale" class="w-4 h-4"></i>
+                  </span>
+                  <h3 class="text-sm font-bold text-white tracking-tight" data-i18n="matrixTitle">Сценарный анализ «Что если?»: Выбор стратегии для руководства</h3>
+                </div>
+                <p class="text-xs text-slate-400" data-i18n="matrixDesc">Сравнение: оставить старый процесс FIFO, нанять ещё сотрудника в штат (+120k ₽) или внедрить алгоритм AutoFlow</p>
+              </div>
+              <span class="text-[10px] font-mono px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 font-semibold self-start sm:self-auto" data-i18n="matrixSavingBadge">
+                ЭКОНОМИЯ 1.44 МЛН ₽ / ГОД
+              </span>
+            </div>
+
+            <!-- 3 Scenario Columns Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 font-mono text-xs">
+              
+              <!-- Scenario A: Status Quo -->
+              <div class="bg-slate-950/70 rounded-2xl p-4 border border-rose-500/25 space-y-3 relative group">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-rose-400 uppercase tracking-wider font-sans" data-i18n="scenarioATitle">Сценарий А: Статус-кво</span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/30">FIFO</span>
+                </div>
+                <div class="space-y-1.5 font-sans text-xs text-slate-300">
+                  <div class="flex justify-between"><span data-i18n="matrixStaffLabel">Штат:</span> <span class="font-mono text-white">2 <span data-i18n="opsUnit">оператора</span></span></div>
+                  <div class="flex justify-between"><span data-i18n="matrixVipBreachLabel">Срыв VIP:</span> <span class="font-mono text-rose-400 font-bold" id="matrixFifoVipBreach">71.4%</span></div>
+                  <div class="flex justify-between"><span data-i18n="matrixFotLabel">Затраты на ФОТ:</span> <span class="font-mono text-slate-400" data-i18n="matrixNoChanges">Без изменений</span></div>
+                  <div class="flex justify-between pt-1.5 border-t border-white/5 font-semibold text-rose-400">
+                    <span data-i18n="matrixChurnRiskLabel">Риск оттока VIP:</span> <span class="font-mono" data-i18n="matrixRiskCritical">КРИТИЧЕСКИЙ</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Scenario B: Hiring Extra Staff -->
+              <div class="bg-slate-950/70 rounded-2xl p-4 border border-amber-500/25 space-y-3 relative group">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-amber-400 uppercase tracking-wider font-sans" data-i18n="scenarioBTitle">Сценарий B: Найм оператора</span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-300 border border-amber-500/30">+1 чел</span>
+                </div>
+                <div class="space-y-1.5 font-sans text-xs text-slate-300">
+                  <div class="flex justify-between"><span data-i18n="matrixStaffLabel">Штат:</span> <span class="font-mono text-white">3 <span data-i18n="opsUnit">оператора</span> (+50%)</span></div>
+                  <div class="flex justify-between"><span data-i18n="matrixVipBreachLabel">Срыв VIP:</span> <span class="font-mono text-amber-300 font-bold" id="matrixHiringVipBreach">~33.0%</span></div>
+                  <div class="flex justify-between"><span data-i18n="matrixFotLabel">Затраты на ФОТ:</span> <span class="font-mono text-amber-400 font-bold">+120 000 ₽/мес</span></div>
+                  <div class="flex justify-between pt-1.5 border-t border-white/5 font-semibold text-amber-400">
+                    <span data-i18n="matrixAnnualExpenseLabel">Годовой расход:</span> <span class="font-mono">+1.44 млн ₽</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Scenario C: AutoFlow Algorithm (Winner) -->
+              <div class="bg-gradient-to-b from-indigo-950/50 to-emerald-950/50 rounded-2xl p-4 border-2 border-emerald-500/60 space-y-3 relative group shadow-lg shadow-emerald-500/15">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider font-sans flex items-center gap-1">
+                    <span data-i18n="scenarioCTitle">Сценарий C: AutoFlow</span>
+                    <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  </span>
+                  <span class="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-bold" data-i18n="matrixOptimalBadge">ОПТИМАЛЬНО</span>
+                </div>
+                <div class="space-y-1.5 font-sans text-xs text-slate-300">
+                  <div class="flex justify-between"><span data-i18n="matrixStaffLabel">Штат:</span> <span class="font-mono text-white">2 <span data-i18n="opsUnit">оператора</span> (<span data-i18n="matrixSameStaff">прежний</span>)</span></div>
+                  <div class="flex justify-between"><span data-i18n="matrixVipBreachLabel">Срыв VIP:</span> <span class="font-mono text-emerald-400 font-bold" id="matrixAfVipBreach">0.0%</span></div>
+                  <div class="flex justify-between"><span data-i18n="matrixFotLabel">Затраты на ФОТ:</span> <span class="font-mono text-emerald-400 font-bold">0 ₽ (<span data-i18n="matrixSavingWord">Экономия</span>)</span></div>
+                  <div class="flex justify-between pt-1.5 border-t border-white/5 font-semibold text-emerald-300">
+                    <span data-i18n="matrixBizEffectLabel">Эффект для бизнеса:</span> <span class="font-mono" data-i18n="matrixBetterWord">В 5 раз лучше</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- UPGRADED AI COPILOT CHAT (CONVERSATIONAL, BEAUTIFUL, NATURAL RESPONSES) -->
+          <div class="glass-panel rounded-3xl p-6 border border-indigo-500/30 relative overflow-hidden shadow-2xl bg-gradient-to-b from-slate-900/90 to-slate-950/95" id="tourStepAi">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <!-- Copilot Header -->
+            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+              <div class="flex items-center space-x-3">
+                <div class="relative flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-500 to-emerald-400 p-[1.5px]">
+                  <div class="w-full h-full bg-slate-950 rounded-[10px] flex items-center justify-center">
+                    <i data-lucide="bot" class="w-5 h-5 text-indigo-400"></i>
+                  </div>
+                </div>
+                <div>
+                  <div class="flex items-center space-x-2">
+                    <h3 class="text-sm font-bold text-white">AutoFlow AI Copilot</h3>
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" data-i18n="copilotBadge">В сети • Аналитик</span>
+                  </div>
+                  <p class="text-xs text-slate-400" data-i18n="copilotSubtitle">Умный аналитический разбор смены, ответы на вопросы и бизнес-консультации</p>
+                </div>
+              </div>
+
+              <button id="clearChatBtn" class="text-xs text-slate-400 hover:text-white px-2.5 py-1 rounded-lg hover:bg-slate-800 transition" data-i18n="clearChatBtn">
+                Очистить чат
+              </button>
+            </div>
+
+            <!-- Interactive Chat Messages Container -->
+            <div id="chatMessagesContainer" class="chat-scroll space-y-3.5 pr-1 mb-4 text-xs sm:text-sm">
+              <!-- Dynamically rendered via app.js -->
+            </div>
+
+            <!-- Quick Question Chips -->
+            <div class="space-y-2 pt-2 border-t border-white/5">
+              <div class="text-[11px] font-medium text-slate-400 flex items-center gap-1.5">
+                <i data-lucide="help-circle" class="w-3.5 h-3.5 text-indigo-400"></i>
+                <span data-i18n="copilotQuickChipsTitle">Быстрые вопросы для консультации:</span>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <button class="ai-chip text-xs px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-indigo-950/70 border border-slate-700/80 hover:border-indigo-500/50 text-slate-300 transition-all flex items-center gap-1.5" data-question="tradeoff">
+                  <i data-lucide="help-circle" class="w-3.5 h-3.5 text-amber-400"></i>
+                  <span data-i18n="chipTradeoff">Почему обычные клиенты ждут чуть дольше?</span>
+                </button>
+                <button class="ai-chip text-xs px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-indigo-950/70 border border-slate-700/80 hover:border-indigo-500/50 text-slate-300 transition-all flex items-center gap-1.5" data-question="starvation">
+                  <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span data-i18n="chipStarvation">Как работает защита от голодания?</span>
+                </button>
+                <button class="ai-chip text-xs px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-indigo-950/70 border border-slate-700/80 hover:border-indigo-500/50 text-slate-300 transition-all flex items-center gap-1.5" data-question="overload">
+                  <i data-lucide="alert-octagon" class="w-3.5 h-3.5 text-rose-400"></i>
+                  <span data-i18n="chipOverload">Что будет при пиковой перегрузке?</span>
+                </button>
+                <button class="ai-chip text-xs px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-indigo-950/70 border border-slate-700/80 hover:border-indigo-500/50 text-slate-300 transition-all flex items-center gap-1.5" data-question="roi">
+                  <i data-lucide="circle-dollar-sign" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span data-i18n="chipRoi">Какая выгода в деньгах для бизнеса?</span>
+                </button>
+                <button class="ai-chip text-xs px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-indigo-950/70 border border-slate-700/80 hover:border-indigo-500/50 text-slate-300 transition-all flex items-center gap-1.5" data-question="weights">
+                  <i data-lucide="sliders" class="w-3.5 h-3.5 text-indigo-400"></i>
+                  <span data-i18n="chipWeights">Как настроить веса w1, w2, w3?</span>
+                </button>
+                <button class="ai-chip text-xs px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-indigo-950/70 border border-slate-700/80 hover:border-indigo-500/50 text-slate-300 transition-all flex items-center gap-1.5" data-question="operators">
+                  <i data-lucide="users" class="w-3.5 h-3.5 text-cyan-400"></i>
+                  <span data-i18n="chipOperators">Хватает ли операторов в смене?</span>
+                </button>
+                <button class="ai-chip text-xs px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-indigo-950/70 border border-slate-700/80 hover:border-indigo-500/50 text-slate-300 transition-all flex items-center gap-1.5" data-question="hiring">
+                  <i data-lucide="user-plus" class="w-3.5 h-3.5 text-purple-400"></i>
+                  <span data-i18n="chipHiring">Нанять оператора или включить AutoFlow?</span>
+                </button>
+                <button class="ai-chip text-xs px-3 py-1.5 rounded-xl bg-slate-800/80 hover:bg-indigo-950/70 border border-slate-700/80 hover:border-indigo-500/50 text-slate-300 transition-all flex items-center gap-1.5" data-question="integration">
+                  <i data-lucide="network" class="w-3.5 h-3.5 text-blue-400"></i>
+                  <span data-i18n="chipIntegration">Как внедрить алгоритм в CRM?</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Free-form Question Input -->
+            <div class="mt-3.5 flex gap-2">
+              <div class="relative flex-1">
+                <i data-lucide="message-square" class="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+                <input type="text" id="copilotInput" data-i18n-placeholder="copilotInputPlaceholder" placeholder="Задайте вопрос ИИ (например: «привет», «как настроить веса», «хватает ли операторов»)..." class="w-full bg-slate-950/90 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition-colors" />
+              </div>
+              <button id="copilotAskBtn" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-lg shadow-indigo-600/30">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+                <span data-i18n="copilotAskBtn">Спросить</span>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- DETAILED SIMULATION TABLE -->
+          <div class="glass-panel rounded-3xl p-5 border border-white/10 space-y-4">
+            
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/5 pb-4">
+              <div>
+                <div class="flex items-center space-x-2">
+                  <i data-lucide="list-ordered" class="w-4 h-4 text-indigo-400"></i>
+                  <h3 class="text-sm font-bold text-white" data-i18n="tableTitle">Детальный журнал обращений смены</h3>
+                  <span id="tableCountBadge" class="text-xs font-mono px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">100 шт</span>
+                </div>
+                <p class="text-xs text-slate-400" data-i18n="tableSubtitle">Сравнение по каждой заявке: время ожидания в очереди и итоговый статус SLA</p>
+              </div>
+
+              <!-- Filters -->
+              <div class="flex items-center space-x-2">
+                <select id="tableFilter" class="bg-slate-950/90 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 font-medium">
+                  <option value="all" data-i18n="optAll">Все заявки</option>
+                  <option value="saved" data-i18n="optSaved">⚡ Спасённые AutoFlow</option>
+                  <option value="vip" data-i18n="optVip">👑 Только VIP</option>
+                  <option value="breached" data-i18n="optBreached">❌ Срывы SLA</option>
+                  <option value="ontime" data-i18n="optOntime">✅ Выполненные в срок</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Table with Scroll -->
+            <div class="overflow-x-auto max-h-96 rounded-2xl border border-white/10 bg-slate-950/60 shadow-inner pr-1">
+              <table class="w-full text-left text-xs border-collapse">
+                <thead class="bg-slate-900/95 sticky top-0 z-10 text-[11px] font-mono uppercase text-slate-400 border-b border-slate-800 backdrop-blur-md">
+                  <tr>
+                    <th class="py-2.5 px-2.5 whitespace-nowrap">ID</th>
+                    <th class="py-2.5 px-2.5 whitespace-nowrap" data-i18n="thClient">Клиент</th>
+                    <th class="py-2.5 px-2 whitespace-nowrap" data-i18n="thArrival">Приход</th>
+                    <th class="py-2.5 px-2 whitespace-nowrap" data-i18n="thDuration">Длит.</th>
+                    <th class="py-2.5 px-2.5 whitespace-nowrap">FIFO</th>
+                    <th class="py-2.5 px-2.5 whitespace-nowrap">AutoFlow</th>
+                    <th class="py-2.5 px-2.5 whitespace-nowrap" data-i18n="thDelta">Дельта</th>
+                    <th class="py-2.5 px-3 text-center whitespace-nowrap min-w-[120px]" data-i18n="thResult">Результат</th>
+                  </tr>
+                </thead>
+                <tbody id="ticketsTableBody" class="divide-y divide-slate-800/60 font-mono text-slate-300">
+                  <!-- Dynamically populated via app.js -->
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Table Summary Footer -->
+            <div class="flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 pt-2 gap-2">
+              <div class="flex items-center space-x-3">
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-emerald-400"></span> <span id="statSavedCount">0 спасены</span></span>
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-400"></span> <span id="statOnTimeCount">0 в срок</span></span>
+                <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-rose-400"></span> <span id="statBreachedCount">0 сорваны</span></span>
+              </div>
+              <span class="text-[11px] text-slate-500" data-i18n="tableSortingNote">Автоматическая сортировка по времени поступления</span>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 2: REALTIME QUEUE RACE VISUALIZER -->
+    <!-- ============================================================ -->
+    <div id="tab-race" class="tab-pane hidden space-y-6">
+      
+      <div class="glass-panel rounded-3xl p-6 sm:p-8 border border-white/10 space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-5">
+          <div class="space-y-1">
+            <div class="inline-flex items-center space-x-2 px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-xs font-mono">
+              <i data-lucide="activity" class="w-3.5 h-3.5"></i>
+              <span data-i18n="raceBadge">Сравнение алгоритмов в реальном времени</span>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight" data-i18n="raceTitle">Интерактивная гонка очередей: FIFO vs AutoFlow</h2>
+            <p class="text-xs text-slate-400" data-i18n="raceDesc">Наблюдайте, как поступающие заявки обрабатываются операторами параллельно по двум разным стратегиям</p>
+          </div>
+
+          <!-- Controls -->
+          <div class="flex items-center space-x-2">
+            <button id="racePlayBtn" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center space-x-1.5 shadow-lg shadow-emerald-600/30 active:scale-95 transition">
+              <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+              <span id="racePlayText" data-i18n="racePlayBtn">Запустить гонку</span>
+            </button>
+
+            <button id="raceResetBtn" class="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium active:scale-95 transition">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+            </button>
+
+            <div class="flex items-center bg-slate-900 border border-slate-700 rounded-xl p-1 text-xs font-mono">
+              <button class="race-speed-btn active px-2.5 py-1 rounded-lg bg-indigo-600 text-white" data-speed="1">1x</button>
+              <button class="race-speed-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white" data-speed="2">2x</button>
+              <button class="race-speed-btn px-2.5 py-1 rounded-lg text-slate-400 hover:text-white" data-speed="4">4x</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- RACE ARENA (SIDE BY SIDE) -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+          <!-- LANE 1: FIFO -->
+          <div class="race-conveyor p-5 space-y-4 border border-rose-500/20 bg-gradient-to-b from-slate-900/80 to-rose-950/10">
+            <div class="flex items-center justify-between border-b border-rose-500/20 pb-3">
+              <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+                <h3 class="font-bold text-white text-sm" data-i18n="raceFifoTitle">Классическая очередь FIFO</h3>
+              </div>
+              <div class="flex items-center space-x-3 text-xs font-mono">
+                <span class="text-rose-400 font-semibold" id="fifoRaceBreaches">Срывов: 0</span>
+                <span class="text-slate-400" id="fifoRaceProcessed">Обработано: 0</span>
+              </div>
+            </div>
+
+            <!-- Operators Booths -->
+            <div class="space-y-1.5">
+              <span class="text-[11px] font-mono text-slate-400" data-i18n="raceOpsLabel">Операторы смены:</span>
+              <div class="grid grid-cols-2 gap-2" id="fifoOperatorsContainer">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Live Queue Stream -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-[11px] font-mono text-slate-400">
+                <span data-i18n="raceQueueLabel">Очередь ожидания:</span>
+                <span id="fifoQueueCount">0 в очереди</span>
+              </div>
+              <div id="fifoQueueLane" class="min-h-[140px] max-h-[160px] overflow-x-auto overflow-y-hidden flex items-center gap-2 p-2.5 bg-slate-950/70 rounded-xl border border-slate-800">
+                <span class="text-xs text-slate-500 font-mono mx-auto" data-i18n="raceQueueEmpty">Нажмите «Запустить гонку»</span>
+              </div>
+            </div>
+
+            <div class="text-xs text-slate-400 bg-rose-950/30 border border-rose-800/30 rounded-xl p-3 leading-relaxed" data-i18n="raceFifoNote">
+              🚨 <strong>Слабое место FIFO:</strong> VIP-клиенты с дедлайном 25 мин застревают позади обычных длинных обращений и гарантированно срывают SLA.
+            </div>
+          </div>
+
+          <!-- LANE 2: AUTOFLOW -->
+          <div class="race-conveyor p-5 space-y-4 border border-emerald-500/20 bg-gradient-to-b from-slate-900/80 to-emerald-950/10">
+            <div class="flex items-center justify-between border-b border-emerald-500/20 pb-3">
+              <div class="flex items-center space-x-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                <h3 class="font-bold text-white text-sm" data-i18n="raceAfTitle">Умный алгоритм AutoFlow</h3>
+              </div>
+              <div class="flex items-center space-x-3 text-xs font-mono">
+                <span class="text-emerald-400 font-semibold" id="afRaceSaved">Спасены: 0</span>
+                <span class="text-slate-400" id="afRaceProcessed">Обработано: 0</span>
+              </div>
+            </div>
+
+            <!-- Operators Booths -->
+            <div class="space-y-1.5">
+              <span class="text-[11px] font-mono text-slate-400" data-i18n="raceOpsLabel">Операторы смены:</span>
+              <div class="grid grid-cols-2 gap-2" id="afOperatorsContainer">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+
+            <!-- Live Queue Stream -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-[11px] font-mono text-slate-400">
+                <span data-i18n="raceAfQueueLabel">Очередь ожидания (ранжирована по Score):</span>
+                <span id="afQueueCount">0 в очереди</span>
+              </div>
+              <div id="afQueueLane" class="min-h-[140px] max-h-[160px] overflow-x-auto overflow-y-hidden flex items-center gap-2 p-2.5 bg-slate-950/70 rounded-xl border border-slate-800">
+                <span class="text-xs text-slate-500 font-mono mx-auto" data-i18n="raceQueueEmpty">Нажмите «Запустить гонку»</span>
+              </div>
+            </div>
+
+            <div class="text-xs text-slate-400 bg-emerald-950/30 border border-emerald-800/30 rounded-xl p-3 leading-relaxed" data-i18n="raceAfNote">
+              ⚡ <strong>Преимущество AutoFlow:</strong> VIP-клиенты динамически выходят вперед, а обычные получают приоритет, когда их лимит SLA подходит к концу.
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Race Clock & Progress -->
+        <div class="flex items-center justify-between bg-slate-950/80 p-3.5 rounded-2xl border border-white/5 font-mono text-xs">
+          <div class="flex items-center space-x-2">
+            <i data-lucide="clock" class="w-4 h-4 text-indigo-400"></i>
+            <span><span data-i18n="raceClockLabel">Виртуальное время смены:</span> <strong class="text-white" id="raceTimeDisplay">09:00 (0 мин)</strong></span>
+          </div>
+          <div class="w-1/3 bg-slate-800 h-2 rounded-full overflow-hidden">
+            <div id="raceProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 w-0 transition-all"></div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 3: BUSINESS ROI & FINANCIAL IMPACT CALCULATOR -->
+    <!-- ============================================================ -->
+    <div id="tab-roi" class="tab-pane hidden space-y-6">
+      
+      <div class="glass-panel rounded-3xl p-6 sm:p-8 border border-white/10 space-y-6">
+        
+        <div class="border-b border-white/5 pb-5">
+          <div class="inline-flex items-center space-x-2 px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 text-xs font-mono mb-2">
+            <i data-lucide="calculator" class="w-3.5 h-3.5"></i>
+            <span data-i18n="roiBadge">Финансово-экономическая модель внедрения</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight" data-i18n="roiTitle">Калькулятор финансовой окупаемости (ROI)</h2>
+          <p class="text-xs sm:text-sm text-slate-300" data-i18n="roiDesc">Рассчитайте в реальных рублях, сколько денег ваша компания сбережет за счет удержания VIP-клиентов и экономии фонда оплаты труда (ФОТ)</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          
+          <!-- ROI Controls (5 cols) -->
+          <div class="lg:col-span-5 space-y-5 bg-slate-950/50 p-6 rounded-3xl border border-slate-800">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="sliders" class="w-4 h-4 text-amber-400"></i>
+              <span data-i18n="roiInputsTitle">Финансовые вводные бизнеса:</span>
+            </h3>
+
+            <!-- Input 1: Monthly Tickets Volume -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-300" data-i18n="roiMonthlyVolumeLabel">Объем заявок в месяц:</span>
+                <span id="roiMonthlyVolumeVal" class="font-mono font-bold text-white">8 000 шт</span>
+              </div>
+              <input type="range" id="roiMonthlyVolume" min="2000" max="40000" step="1000" value="8000" class="slider-purple" />
+            </div>
+
+            <!-- Input 2: VIP Customer Lifetime Value (LTV) -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-300" data-i18n="roiVipLtvLabel">Средняя ценность VIP (LTV):</span>
+                <span id="roiVipLtvVal" class="font-mono font-bold text-amber-400">45 000 ₽</span>
+              </div>
+              <input type="range" id="roiVipLtv" min="10000" max="250000" step="5000" value="45000" class="slider-amber" />
+              <p class="text-[11px] text-slate-500" data-i18n="roiVipLtvSub">Доход, который приносит один VIP-клиент за жизненный цикл</p>
+            </div>
+
+            <!-- Input 3: SLA Breach Penalty / Compensation -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-300" data-i18n="roiPenaltyLabel">Компенсация за срыв SLA:</span>
+                <span id="roiPenaltyVal" class="font-mono font-bold text-rose-400">1 500 ₽</span>
+              </div>
+              <input type="range" id="roiPenalty" min="0" max="10000" step="250" value="1500" />
+              <p class="text-[11px] text-slate-500" data-i18n="roiPenaltySub">Прямой штраф, скидка или бонус лояльности за просрочку</p>
+            </div>
+
+            <!-- Input 4: Operator Monthly Salary (FOT) -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <span class="text-slate-300" data-i18n="roiSalaryLabel">Зарплата 1 оператора в месяц (ФОТ):</span>
+                <span id="roiSalaryVal" class="font-mono font-bold text-emerald-400">65 000 ₽</span>
+              </div>
+              <input type="range" id="roiSalary" min="40000" max="150000" step="5000" value="65000" class="slider-emerald" />
+            </div>
+          </div>
+
+          <!-- ROI Results Cards (7 cols) -->
+          <div class="lg:col-span-7 space-y-5">
+            
+            <!-- Big Total Savings Banner -->
+            <div class="glass-panel p-6 rounded-3xl border border-emerald-500/30 bg-gradient-to-br from-slate-900/90 to-emerald-950/30 shadow-2xl space-y-2">
+              <div class="flex items-center justify-between text-xs font-mono text-emerald-400">
+                <span class="uppercase tracking-wider" data-i18n="roiEffectBadge">Экономический эффект внедрения AutoFlow:</span>
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/30 font-semibold" data-i18n="roiNetProfitBadge">Чистая выгода</span>
+              </div>
+              <div class="flex items-baseline space-x-3">
+                <span class="text-3xl sm:text-5xl font-black font-mono text-white tracking-tight" id="roiTotalSavingsMonth">1 150 000 ₽</span>
+                <span class="text-sm font-mono text-slate-400" data-i18n="roiPerMonth">/ месяц</span>
+              </div>
+              <div class="pt-2 flex items-center justify-between text-xs font-mono text-slate-300">
+                <span><span data-i18n="roiAnnualGainLabel">Годовая выгода:</span> <strong class="text-emerald-400 text-sm" id="roiTotalSavingsYear">13 800 000 ₽</strong></span>
+                <span class="text-purple-300 font-semibold" id="roiPaybackDays">Окупаемость: 9 дней</span>
+              </div>
+            </div>
+
+            <!-- 3 Breakdown Cards -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              
+              <div class="bg-slate-950/60 border border-amber-500/20 rounded-2xl p-4 space-y-1">
+                <span class="text-[10px] uppercase font-mono text-slate-400" data-i18n="roiCard1Title">Удержано выручки VIP:</span>
+                <div class="text-lg font-black font-mono text-amber-400" id="roiVipRevenueSaved">720 000 ₽</div>
+                <p class="text-[11px] text-slate-400" data-i18n="roiCard1Sub">Спасенные ключевые клиенты от ухода к конкурентам</p>
+              </div>
+
+              <div class="bg-slate-950/60 border border-rose-500/20 rounded-2xl p-4 space-y-1">
+                <span class="text-[10px] uppercase font-mono text-slate-400" data-i18n="roiCard2Title">Экономия на штрафах SLA:</span>
+                <div class="text-lg font-black font-mono text-rose-400" id="roiPenaltiesSaved">240 000 ₽</div>
+                <p class="text-[11px] text-slate-400" data-i18n="roiCard2Sub">Сокращение выплат компенсаций и претензий</p>
+              </div>
+
+              <div class="bg-slate-950/60 border border-emerald-500/20 rounded-2xl p-4 space-y-1">
+                <span class="text-[10px] uppercase font-mono text-slate-400" data-i18n="roiCard3Title">Экономия на найме ФОТ:</span>
+                <div class="text-lg font-black font-mono text-emerald-400" id="roiStaffSavings">190 000 ₽</div>
+                <p class="text-[11px] text-slate-400" data-i18n="roiCard3Sub">Не нужно нанимать 2–3 лишних оператора</p>
+              </div>
+
+            </div>
+
+            <!-- Copy Summary Button for Executives -->
+            <div class="bg-slate-950/70 p-4 rounded-2xl border border-white/5 flex items-center justify-between">
+              <div>
+                <h4 class="text-xs font-semibold text-white" data-i18n="roiPitchTitle">Готовое обоснование для генерального директора</h4>
+                <p class="text-[11px] text-slate-400" data-i18n="roiPitchSub">Скопируйте краткую сводку расчетов для презентации руководству</p>
+              </div>
+              <button id="copyRoiPitchBtn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-medium flex items-center space-x-1.5 transition active:scale-95">
+                <i data-lucide="copy" class="w-3.5 h-3.5 text-indigo-400"></i>
+                <span id="copyRoiPitchText" data-i18n="roiCopyPitchBtn">Скопировать резюме</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- TAB 4: BUSINESS AUTOMATION ACADEMY & BLUEPRINTS -->
+    <!-- ============================================================ -->
+    <div id="tab-academy" class="tab-pane hidden space-y-6">
+      
+      <div class="glass-panel rounded-3xl p-6 sm:p-8 border border-white/10 space-y-8">
+        
+        <div class="border-b border-white/5 pb-5">
+          <div class="inline-flex items-center space-x-2 px-2.5 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30 text-xs font-mono mb-2">
+            <i data-lucide="book-open" class="w-3.5 h-3.5"></i>
+            <span data-i18n="academyBadge">Методология и архитектура внедрения</span>
+          </div>
+          <h2 class="text-xl sm:text-2xl font-bold text-white tracking-tight" data-i18n="academyTitle">Академия Автоматизации Бизнес-Процессов</h2>
+          <p class="text-xs sm:text-sm text-slate-300" data-i18n="academyDesc">Пошаговое руководство для IT-директоров, операционных руководителей и тимлидов: как внедрить алгоритм AutoFlow в реальную инфраструктуру</p>
+        </div>
+
+        <!-- 5-STEP IMPLEMENTATION ROADMAP -->
+        <div class="space-y-4">
+          <h3 class="text-base font-bold text-white flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+            <span data-i18n="roadmapTitle">5 этапов автоматизации диспетчеризации в компании</span>
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
+            
+            <div class="bg-slate-950/60 border border-white/10 rounded-2xl p-4 space-y-2">
+              <span class="text-xs font-mono font-bold text-indigo-400 block" data-i18n="step1Tag">ШАГ 1</span>
+              <h4 class="text-xs font-bold text-white" data-i18n="step1Title">Аудит и Сегментация</h4>
+              <p class="text-[11px] text-slate-400 leading-relaxed" data-i18n="step1Desc">
+                Разделите клиентов по LTV и жесткости контрактов. Назначьте строгий SLA (например, 15–25 мин) для топ-20% клиентов.
+              </p>
+            </div>
+
+            <div class="bg-slate-950/60 border border-white/10 rounded-2xl p-4 space-y-2">
+              <span class="text-xs font-mono font-bold text-purple-400 block" data-i18n="step2Tag">ШАГ 2</span>
+              <h4 class="text-xs font-bold text-white" data-i18n="step2Title">Калибровка Весов</h4>
+              <p class="text-[11px] text-slate-400 leading-relaxed" data-i18n="step2Desc">
+                Сбалансируйте формулу в AutoFlow Lab: высокий w₁ для маржинальности, w₂ для защиты дедлайнов и w₃ против голодания очереди.
+              </p>
+            </div>
+
+            <div class="bg-slate-950/60 border border-white/10 rounded-2xl p-4 space-y-2">
+              <span class="text-xs font-mono font-bold text-emerald-400 block" data-i18n="step3Tag">ШАГ 3</span>
+              <h4 class="text-xs font-bold text-white" data-i18n="step3Title">Интеграция с Очередями</h4>
+              <p class="text-[11px] text-slate-400 leading-relaxed" data-i18n="step3Desc">
+                Подключите брокер очередей (Redis Sorted Sets, RabbitMQ, Kafka). Рассчитывайте Score в момент освобождения сотрудника.
+              </p>
+            </div>
+
+            <div class="bg-slate-950/60 border border-white/10 rounded-2xl p-4 space-y-2">
+              <span class="text-xs font-mono font-bold text-amber-400 block" data-i18n="step4Tag">ШАГ 4</span>
+              <h4 class="text-xs font-bold text-white" data-i18n="step4Title">Подключение CRM</h4>
+              <p class="text-[11px] text-slate-400 leading-relaxed" data-i18n="step4Desc">
+                Настройте распределение тикетов в Zendesk, Jira Service Desk, amoCRM или Bitrix24 через вебхук авто-назначения.
+              </p>
+            </div>
+
+            <div class="bg-slate-950/60 border border-white/10 rounded-2xl p-4 space-y-2">
+              <span class="text-xs font-mono font-bold text-rose-400 block" data-i18n="step5Tag">ШАГ 5</span>
+              <h4 class="text-xs font-bold text-white" data-i18n="step5Title">Триаж и Мониторинг</h4>
+              <p class="text-[11px] text-slate-400 leading-relaxed" data-i18n="step5Desc">
+                Включите отсечение Urgency для уже сорванных заявок, предотвращая каскадные срывы дедлайнов в пиковые часы.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- 4 INDUSTRY BLUEPRINTS (READY TO APPLY) -->
+        <div class="space-y-4 pt-4 border-t border-white/5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-bold text-white flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+              <span data-i18n="blueprintsTitle">Готовые отраслевые шаблоны (Blueprints)</span>
+            </h3>
+            <span class="text-xs font-mono text-slate-400" data-i18n="blueprintsSub">Нажмите «Применить», чтобы протестировать шаблон в симуляторе</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- Blueprint 1: Fintech & Banking -->
+            <div class="bg-slate-950/70 border border-amber-500/30 rounded-2xl p-5 space-y-3 relative group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="p-2 rounded-lg bg-amber-500/15 text-amber-400"><i data-lucide="landmark" class="w-4 h-4"></i></span>
+                  <div>
+                    <h4 class="text-sm font-bold text-white" data-i18n="bp1Title">Банкинг & Private Banking</h4>
+                    <p class="text-[11px] text-slate-400" data-i18n="bp1Sub">Высокая цена ухода клиента, жесткие нормативы ЦБ</p>
+                  </div>
+                </div>
+                <button class="apply-blueprint-btn text-xs px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 transition font-mono" data-preset-name="fintech" data-i18n="bpApplyBtn">
+                  Применить →
+                </button>
+              </div>
+              <p class="text-xs text-slate-300" data-i18n="bp1Desc">
+                VIP: 35% базы, SLA VIP: 15 минут, веса: <code class="text-amber-400 font-mono">w₁=65, w₂=25, w₃=10</code>. Максимальная защита крупных вкладчиков и инвесторов.
+              </p>
+            </div>
+
+            <!-- Blueprint 2: E-Commerce Black Friday -->
+            <div class="bg-slate-950/70 border border-indigo-500/30 rounded-2xl p-5 space-y-3 relative group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="p-2 rounded-lg bg-indigo-500/15 text-indigo-400"><i data-lucide="shopping-bag" class="w-4 h-4"></i></span>
+                  <div>
+                    <h4 class="text-sm font-bold text-white" data-i18n="bp2Title">E-Commerce & Черная Пятница</h4>
+                    <p class="text-[11px] text-slate-400" data-i18n="bp2Sub">Пиковый наплыв заказов, корзины свыше 50 000 ₽</p>
+                  </div>
+                </div>
+                <button class="apply-blueprint-btn text-xs px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 transition font-mono" data-preset-name="retail" data-i18n="bpApplyBtn">
+                  Применить →
+                </button>
+              </div>
+              <p class="text-xs text-slate-300" data-i18n="bp2Desc">
+                190+ заявок, 3 оператора, веса: <code class="text-indigo-400 font-mono">w₁=50, w₂=35, w₃=15</code>. Защита горящих платежей без потери обычных покупателей.
+              </p>
+            </div>
+
+            <!-- Blueprint 3: B2B Enterprise SaaS Support -->
+            <div class="bg-slate-950/70 border border-purple-500/30 rounded-2xl p-5 space-y-3 relative group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="p-2 rounded-lg bg-purple-500/15 text-purple-400"><i data-lucide="server" class="w-4 h-4"></i></span>
+                  <div>
+                    <h4 class="text-sm font-bold text-white" data-i18n="bp3Title">B2B SaaS & IT-поддержка</h4>
+                    <p class="text-[11px] text-slate-400" data-i18n="bp3Sub">Угроза оттока (Churn) и штрафы по контрактам Platinum</p>
+                  </div>
+                </div>
+                <button class="apply-blueprint-btn text-xs px-3 py-1.5 rounded-xl bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/40 transition font-mono" data-preset-name="saas" data-i18n="bpApplyBtn">
+                  Применить →
+                </button>
+              </div>
+              <p class="text-xs text-slate-300" data-i18n="bp3Desc">
+                VIP: 25%, веса: <code class="text-purple-400 font-mono">w₁=55, w₂=30, w₃=15</code>. Гарантированное удержание ключевых Enterprise-клиентов.
+              </p>
+            </div>
+
+            <!-- Blueprint 4: Medical Triage -->
+            <div class="bg-slate-950/70 border border-emerald-500/30 rounded-2xl p-5 space-y-3 relative group">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                  <span class="p-2 rounded-lg bg-emerald-500/15 text-emerald-400"><i data-lucide="stethoscope" class="w-4 h-4"></i></span>
+                  <div>
+                    <h4 class="text-sm font-bold text-white" data-i18n="bp4Title">Медицинский Триаж (Клиники)</h4>
+                    <p class="text-[11px] text-slate-400" data-i18n="bp4Sub">Экстренность приема и минимизация рисков для здоровья</p>
+                  </div>
+                </div>
+                <button class="apply-blueprint-btn text-xs px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/40 transition font-mono" data-preset-name="med" data-i18n="bpApplyBtn">
+                  Применить →
+                </button>
+              </div>
+              <p class="text-xs text-slate-300" data-i18n="bp4Desc">
+                Критические пациенты: 20%, веса: <code class="text-emerald-400 font-mono">w₁=70, w₂=20, w₃=10</code>. Скорейшее направление тяжелых обращений к профильным врачам.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- CODE GENERATOR / INTEGRATION SDK -->
+        <div class="space-y-3 pt-4 border-t border-white/5">
+          <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-white flex items-center gap-2">
+              <i data-lucide="code-2" class="w-4 h-4 text-indigo-400"></i>
+              <span data-i18n="sdkHeader">Готовый код функции скоринга (Python / TypeScript) для разработчиков:</span>
+            </h3>
+            <button id="copySdkCodeBtn" class="text-xs px-3 py-1.5 rounded-lg bg-indigo-600/30 hover:bg-indigo-600/50 text-indigo-300 border border-indigo-500/40 transition font-mono flex items-center gap-1.5">
+              <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+              <span id="copySdkText" data-i18n="copySdkText">Копировать код</span>
+            </button>
+          </div>
+
+          <div class="code-container p-4 overflow-x-auto text-xs text-slate-300 font-mono leading-relaxed border border-white/10 rounded-2xl bg-black/60">
+<pre class="text-slate-300"><span class="text-purple-400">def</span> <span class="text-emerald-400">calculate_autoflow_score</span>(ticket, current_time, w1=50, w2=30, w3=20):
+    <span class="text-slate-500">"""
+    AutoFlow Algorithm: Dynamic Triage Priority Scoring
+    Author: Нигматдинов Раяз
+    """</span>
+    elapsed_wait = current_time - ticket[<span class="text-amber-300">'created_at'</span>]
+    sla_limit = ticket[<span class="text-amber-300">'sla_minutes'</span>]
+    
+    <span class="text-slate-500"># 1. VIP Status Score</span>
+    vip_score = w1 * (1.0 <span class="text-purple-400">if</span> ticket.get(<span class="text-amber-300">'is_vip'</span>) <span class="text-purple-400">else</span> 0.0)
+    
+    <span class="text-slate-500"># 2. Urgency Score (With Anti-Domino Triage Cutoff)</span>
+    <span class="text-purple-400">if</span> elapsed_wait &gt; sla_limit:
+        urgency_score = 0.0  <span class="text-slate-500"># Don't risk savable tickets for already breached ones</span>
+    <span class="text-purple-400">else</span>:
+        urgency_score = w2 * (elapsed_wait / sla_limit)
+        
+    <span class="text-slate-500"># 3. Starvation Protection (Ensures regular tickets never wait forever)</span>
+    wait_factor = w3 * min(1.5, elapsed_wait / sla_limit)
+    
+    <span class="text-purple-400">return</span> vip_score + urgency_score + wait_factor</pre>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- FIXED SPOTLIGHT ONBOARDING TOUR OVERLAY (100% VISIBLE, BEAUTIFUL GLOW) -->
+  <div id="tourOverlay" class="hidden">
+    <div class="tour-backdrop" id="tourBackdrop"></div>
+    
+    <!-- Tour Dialog Card -->
+    <div class="tour-card p-6 text-slate-100 space-y-4" id="tourCard">
+      <div class="flex items-center justify-between">
+        <span class="text-[11px] font-mono px-2.5 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-500/40" id="tourStepBadge">Шаг 1 из 5</span>
+        <button id="tourSkipBtn" data-i18n="tourSkipBtn" class="text-xs text-slate-400 hover:text-white transition">Пропустить тур</button>
+      </div>
+
+      <div class="space-y-1.5">
+        <h4 class="text-base font-bold text-white tracking-tight" id="tourTitle">Добро пожаловать в AutoFlow Lab!</h4>
+        <p class="text-xs text-slate-300 leading-relaxed" id="tourDescription">
+          Этот сервис наглядно демонстрирует, как спасать VIP-клиентов и устранять очереди с помощью динамического алгоритма AutoFlow.
+        </p>
+      </div>
+
+      <!-- Tour Progress Dots -->
+      <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+        <div id="tourProgressBar" class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 w-1/5 transition-all duration-300"></div>
+      </div>
+
+      <!-- Tour Buttons -->
+      <div class="flex items-center justify-between pt-2">
+        <button id="tourPrevBtn" class="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium transition disabled:opacity-30 disabled:pointer-events-none">
+          ← Назад
+        </button>
+        <button id="tourNextBtn" class="px-5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-md shadow-indigo-600/30 transition active:scale-95">
+          Далее →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       7. OFFICIAL EXECUTIVE AUDIT REPORT MODAL (PRINTABLE / PDF)
+       ============================================================ -->
+  <div id="auditReportModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/85 backdrop-blur-md hidden transition-all duration-300">
+    <div class="glass-panel w-full max-w-3xl rounded-3xl p-6 sm:p-8 border border-white/15 bg-slate-900/95 max-h-[90vh] overflow-y-auto space-y-6 shadow-2xl relative">
+      
+      <!-- Modal Header (Controls: Print + Close) -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-4 no-print">
+        <div class="flex items-center space-x-2.5">
+          <div class="p-2 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
+            <i data-lucide="file-check-2" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-bold text-white" data-i18n="auditModalTitle">Официальный акт аудита эффективности</h3>
+            <p class="text-xs text-slate-400" data-i18n="auditModalSubtitle">Форма экспертного заключения для генерального директора и финансового отдела</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button id="printAuditReportBtn" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md active:scale-95 transition">
+            <i data-lucide="printer" class="w-4 h-4"></i>
+            <span data-i18n="auditPrintBtn">Печать / Сохранить в PDF</span>
+          </button>
+          <button id="closeAuditModalBtn" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition">
+            <i data-lucide="x" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Printable Report Document Body -->
+      <div id="printableAuditDocument" class="space-y-6 text-slate-200 text-xs sm:text-sm">
+        
+        <!-- Document Title & Header -->
+        <div class="border-b-2 border-indigo-500/40 pb-4 space-y-1">
+          <div class="flex items-center justify-between">
+            <span class="text-[11px] font-mono uppercase text-indigo-400 tracking-wider" data-i18n="auditDocBadge">AutoFlow Lab // Исследовательский отчёт</span>
+            <span class="text-[11px] font-mono text-slate-400" data-i18n="auditDocNum">Документ № AF-2026-AUDIT</span>
+          </div>
+          <h2 class="text-lg sm:text-xl font-black text-white uppercase tracking-tight" data-i18n="auditDocTitle">
+            АКТ АУДИТА ЭФФЕКТИВНОСТИ МАРШРУТИЗАЦИИ ОЧЕРЕДЕЙ И ОЦЕНКИ SLA
+          </h2>
+          <p class="text-xs text-slate-400 font-sans" data-i18n="auditDocSubtitle">Сравнительный дискретно-событийный анализ традиционной очереди FIFO и алгоритма нелинейного приоритета AutoFlow</p>
+        </div>
+
+        <!-- Meta Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-950/60 p-3.5 rounded-2xl border border-white/5 text-xs font-mono">
+          <div>
+            <div class="text-slate-500 text-[10px] uppercase" data-i18n="auditMetaFlow">Входящий поток</div>
+            <div class="text-white font-bold" id="auditDocTickets">100 заявок</div>
+          </div>
+          <div>
+            <div class="text-slate-500 text-[10px] uppercase" data-i18n="auditMetaVip">Доля VIP клиентов</div>
+            <div class="text-amber-400 font-bold" id="auditDocVipShare">20% (SLA ≤ 25м)</div>
+          </div>
+          <div>
+            <div class="text-slate-500 text-[10px] uppercase" data-i18n="auditMetaStaff">Штат операторов</div>
+            <div class="text-emerald-400 font-bold" id="auditDocStaff">2 чел на смене</div>
+          </div>
+          <div>
+            <div class="text-slate-500 text-[10px] uppercase" data-i18n="auditMetaWeights">Веса формулы</div>
+            <div class="text-indigo-400 font-bold" id="auditDocWeights">50 / 30 / 20</div>
+          </div>
+        </div>
+
+        <!-- Comparative KPI Table -->
+        <div class="space-y-2">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 font-mono" data-i18n="auditSec1Title">1. Сводные метрики смены: До и После</h4>
+          <div class="overflow-hidden rounded-xl border border-white/10">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-950 text-slate-400 font-mono border-b border-white/10">
+                <tr>
+                  <th class="py-2.5 px-3" data-i18n="auditThMetric">Метрика эффективности</th>
+                  <th class="py-2.5 px-3" data-i18n="auditThFifo">Базовый процесс (FIFO)</th>
+                  <th class="py-2.5 px-3" data-i18n="auditThAf">AutoFlow Lab</th>
+                  <th class="py-2.5 px-3" data-i18n="auditThDelta">Эффект (Дельта)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5 font-mono">
+                <tr>
+                  <td class="py-2.5 px-3 font-sans text-slate-300" data-i18n="auditRowVipBreach">Срыв дедлайнов VIP-клиентов</td>
+                  <td class="py-2.5 px-3 text-rose-400" id="auditDocVipFifo">71.4%</td>
+                  <td class="py-2.5 px-3 text-emerald-400 font-bold" id="auditDocVipAf">0.0%</td>
+                  <td class="py-2.5 px-3 text-emerald-400 font-bold" id="auditDocVipDelta">Снижение на 100% ⚡</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-3 font-sans text-slate-300" data-i18n="auditRowVipWait">Среднее ожидание VIP в очереди</td>
+                  <td class="py-2.5 px-3 text-slate-400" id="auditDocWaitFifo">75.1 мин</td>
+                  <td class="py-2.5 px-3 text-white font-bold" id="auditDocWaitAf">2.5 мин</td>
+                  <td class="py-2.5 px-3 text-emerald-400 font-bold" id="auditDocWaitSpeedup">Ускорение в 30.0 раз</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-3 font-sans text-slate-300" data-i18n="auditRowTotalBreach">Общий срыв дедлайнов (Все)</td>
+                  <td class="py-2.5 px-3 text-slate-400" id="auditDocTotalFifo">64.0%</td>
+                  <td class="py-2.5 px-3 text-indigo-300 font-bold" id="auditDocTotalAf">25.0%</td>
+                  <td class="py-2.5 px-3 text-indigo-300 font-bold" id="auditDocTotalDelta">Снижение на 39.0%</td>
+                </tr>
+                <tr>
+                  <td class="py-2.5 px-3 font-sans text-slate-300" data-i18n="auditRowUtil">Загрузка штата операторов</td>
+                  <td class="py-2.5 px-3 text-slate-400" id="auditDocUtilFifo">84.4%</td>
+                  <td class="py-2.5 px-3 text-emerald-400 font-bold" id="auditDocUtilAf">84.4% (Баланс)</td>
+                  <td class="py-2.5 px-3 text-slate-400" data-i18n="auditRowNoOverload">Без перегрузки персонала</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Financial & ROI Summary -->
+        <div class="bg-gradient-to-r from-indigo-950/40 to-emerald-950/40 p-4 rounded-2xl border border-emerald-500/30 space-y-2">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-emerald-400 font-mono" data-i18n="auditSec2Title">2. Финансовое обоснование и экономический эффект</h4>
+          <p class="text-xs text-slate-300 leading-relaxed font-sans" id="auditDocSec2Text">
+            Внедрение алгоритма AutoFlow устраняет срыв контрактов с премиальными клиентами, предотвращая потери LTV. Экономия фонда оплаты труда (за счёт отсутствия необходимости нанимать дополнительного оператора) составляет <strong>~120 000 ₽ / месяц (1.44 млн ₽ / год)</strong>. Совокупная чистая годовая выгода: <strong class="text-emerald-300" id="auditDocTotalBenefit">от 2.1 млн ₽ в год</strong>. Срок окупаемости внедрения алгоритма: <strong class="text-emerald-300" id="auditDocPayback">~14 дней</strong>.
+          </p>
+        </div>
+
+        <!-- Expert Conclusion & Signature -->
+        <div class="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 font-mono text-xs">
+          <div>
+            <div class="text-slate-400 font-sans" data-i18n="auditAuthorRole">Ведущий исследователь / Разработчик:</div>
+            <div class="text-slate-100 font-bold text-sm" data-i18n="auditAuthorName">Нигматдинов Раяз</div>
+            <div class="text-slate-500 text-[11px]" data-i18n="auditResearchGroup">AutoFlow Lab Research Group • 2026</div>
+          </div>
+          <div class="text-right self-end sm:self-auto border border-emerald-500/30 px-3 py-1.5 rounded-xl bg-emerald-500/10 text-emerald-300 text-[11px] font-bold" data-i18n="auditVerifiedBadge">
+            ✓ ВЕРИФИЦИРОВАНО СИМУЛЯЦИЕЙ
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: ABOUT PROJECT & FORMULA BREAKDOWN -->
+  <div id="aboutModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 sm:p-6">
+    <div id="modalBackdrop" class="absolute inset-0 bg-black/70 modal-backdrop transition-opacity"></div>
+    
+    <div class="relative bg-slate-900 border border-white/15 rounded-3xl max-w-2xl w-full p-6 sm:p-8 modal-content text-slate-200 space-y-6 max-h-[90vh] overflow-y-auto z-10 shadow-2xl">
+      
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div class="flex items-center space-x-3">
+          <div class="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+            <i data-lucide="book-open" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-white tracking-tight" data-i18n="aboutModalTitle">О проекте и математической формуле</h2>
+            <p class="text-xs text-slate-400" data-i18n="aboutModalSubtitle">Исследовательский проект Нигматдинова Раяза</p>
+          </div>
+        </div>
+        <button id="closeModalBtn" class="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-4 text-xs sm:text-sm leading-relaxed text-slate-300">
+        <div>
+          <h4 class="text-sm font-semibold text-white flex items-center gap-2 mb-1.5">
+            <span class="w-1.5 h-4 bg-indigo-500 rounded-full inline-block"></span>
+            <span data-i18n="aboutSec1Title">1. В чём проблема стандартной очереди (FIFO)?</span>
+          </h4>
+          <p class="text-slate-300" data-i18n="aboutSec1Text">
+            В реальных контакт-центрах, банках и B2B-сервисах клиенты имеют разную ценность и разные лимиты ожидания (SLA). Принцип <strong class="text-rose-400 font-mono">FIFO (First-In, First-Out)</strong> абсолютно слеп к этим факторам: важный VIP-клиент с лимитом 25 минут встаёт за 5 обычными обращениями и неизбежно срывает SLA, принося компании финансовые и репутационные убытки.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-semibold text-white flex items-center gap-2 mb-1.5">
+            <span class="w-1.5 h-4 bg-emerald-400 rounded-full inline-block"></span>
+            <span data-i18n="aboutSec2Title">2. Интеллектуальный приоритет AutoFlow</span>
+          </h4>
+          <p class="text-slate-300 mb-2" data-i18n="aboutSec2Text">
+            В момент освобождения оператора алгоритм оценивает каждую заявку в очереди и назначает ей суммарный скоринг:
+          </p>
+          <div class="bg-slate-950/90 border border-indigo-500/30 rounded-xl p-4 font-mono text-xs sm:text-sm text-indigo-300 text-center my-2 shadow-inner">
+            Score = (w₁ · isVIP) + (w₂ · Urgency) + (w₃ · WaitFactor)
+          </div>
+        </div>
+
+        <div class="space-y-3 bg-slate-950/40 p-4 rounded-xl border border-slate-800">
+          <div class="space-y-1">
+            <strong class="text-amber-400 font-mono flex items-center gap-1.5">
+              <span data-i18n="aboutB1Title">● w₁ · isVIP (Приоритет статуса):</span>
+            </strong>
+            <p class="text-xs text-slate-300 pl-4" data-i18n="aboutB1Text">
+              VIP-обращения сразу получают базовый гандикап, поднимаясь выше в очереди.
+            </p>
+          </div>
+
+          <div class="space-y-1">
+            <strong class="text-indigo-400 font-mono flex items-center gap-1.5">
+              <span data-i18n="aboutB2Title">● w₂ · Urgency (Срочность дедлайна & Защита от эффекта домино):</span>
+            </strong>
+            <p class="text-xs text-slate-300 pl-4" data-i18n="aboutB2Text">
+              Пока дедлайн не сорван, срочность растёт пропорционально приближению к лимиту SLA: <code class="text-indigo-300">Wait / SLA</code>. <strong class="text-emerald-300">Ключевая инновация:</strong> если заявка уже просрочена, её срочность <em>обнуляется</em>! Алгоритм не тратит дефицитный ресурс оператора на спасение уже потерянной заявки, если рядом есть другие, которые ещё можно успеть закрыть вовремя.
+            </p>
+          </div>
+
+          <div class="space-y-1">
+            <strong class="text-emerald-400 font-mono flex items-center gap-1.5">
+              <span data-i18n="aboutB3Title">● w₃ · WaitFactor (Защита от бесконечного голодания):</span>
+            </strong>
+            <p class="text-xs text-slate-300 pl-4" data-i18n="aboutB3Text">
+              Предотвращает проблему Starvation. Обычные клиенты со временем накапливают вес за счёт долгого ожидания, что гарантирует их обслуживание даже при непрерывном потоке VIP.
+            </p>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-semibold text-white flex items-center gap-2 mb-1.5">
+            <span class="w-1.5 h-4 bg-purple-400 rounded-full inline-block"></span>
+            <span data-i18n="aboutSec3Title">3. Результаты и выводы симуляции</span>
+          </h4>
+          <p class="text-slate-300" data-i18n="aboutSec3Text">
+            Внедрение AutoFlow снижает срыв VIP-сроков практически до 0% без необходимости бездумно раздувать штат операторов. Небольшой компромисс по времени ожидания обычных клиентов с лихвой окупается сохранённой выручкой от ключевых заказчиков.
+          </p>
+        </div>
+      </div>
+
+      <div class="border-t border-white/10 pt-4 flex items-center justify-between">
+        <span class="text-xs text-slate-400 font-mono">Нигматдинов Раяз • AutoFlow Lab 2026</span>
+        <button id="closeModalFooterBtn" class="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition active:scale-95 shadow-md" data-i18n="aboutCloseBtn">
+          Понятно, к симуляции
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="mt-16 border-t border-white/10 glass-header py-8 page-reveal-footer">
+    <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="zap" class="w-4 h-4 text-indigo-400"></i>
+        <span class="font-bold text-white tracking-wide">AutoFlow Lab</span>
+        <span>• <span data-i18n="footerProject">Исследовательский проект</span></span>
+      </div>
+      <div class="text-center sm:text-right">
+        <span><span data-i18n="footerAuthorPrefix">Автор разработки:</span> <strong class="text-slate-200" data-i18n="footerAuthorName">Нигматдинов Раяз</strong></span>
+        <p class="text-[11px] text-slate-500 mt-0.5" data-i18n="footerSubtitle">Дискретно-событийное моделирование очередей с нелинейной приоритизацией</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- QR CODE MODAL FOR MOBILE AUDIENCE / JURY -->
+  <div id="qrModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md hidden transition-all duration-300">
+    <div class="glass-panel rounded-3xl p-6 sm:p-8 max-w-md w-full border border-emerald-500/30 bg-slate-900/95 shadow-2xl relative overflow-hidden space-y-5 animate-scale-up">
+      <div class="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Header with Close Button -->
+      <div class="flex items-center justify-between border-b border-white/10 pb-4">
+        <div class="flex items-center space-x-2.5">
+          <div class="p-2 rounded-xl bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            <i data-lucide="qr-code" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="flex items-center space-x-2">
+              <h3 class="text-base font-bold text-white tracking-tight" data-i18n="qrModalTitle">AutoFlow Lab на смартфоне</h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/15 text-emerald-300 border border-emerald-500/30" data-i18n="qrModalBadge">Live Mobile</span>
+            </div>
+            <p class="text-xs text-slate-400" data-i18n="qrModalSubtitle">Публичный доступ для экспертов и жюри</p>
+          </div>
+        </div>
+        <button id="closeQrModalBtn" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- QR Code Container -->
+      <div class="flex flex-col items-center justify-center space-y-3 pt-1">
+        <div class="p-3 bg-white rounded-2xl shadow-xl shadow-emerald-500/10 border-2 border-emerald-500/40 relative group">
+          <img id="qrImage" src="https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=https%3A%2F%2Feasy-bikes-cough.loca.lt&format=svg" alt="AutoFlow Lab QR Code" class="w-52 h-52 sm:w-56 sm:h-56 block object-contain rounded-lg" />
+        </div>
+        <p class="text-xs text-slate-300 text-center max-w-xs leading-relaxed" data-i18n="qrModalDesc">
+          Наведите камеру смартфона, чтобы открыть мобильную версию сайта с полной симуляцией в реальном времени.
+        </p>
+      </div>
+
+      <!-- URL Display & Copy Field -->
+      <div class="space-y-2">
+        <label class="text-[11px] font-mono text-slate-400 flex items-center justify-between">
+          <span data-i18n="qrDirectUrlLabel">Прямая ссылка на сайт:</span>
+          <span id="copyToastText" class="text-emerald-400 font-semibold opacity-0 transition-opacity duration-200">✓ Скопировано!</span>
+        </label>
+        <div class="flex items-center space-x-2">
+          <input type="text" id="qrUrlInput" readonly value="https://easy-bikes-cough.loca.lt" class="flex-1 bg-slate-950 border border-slate-700 rounded-xl px-3 py-2 text-xs font-mono text-emerald-300 select-all focus:outline-none focus:border-emerald-500" />
+          <button id="copyQrUrlBtn" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center space-x-1.5 active:scale-95 transition shadow-lg shadow-emerald-600/30 shrink-0">
+            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+            <span data-i18n="copyUrlBtn">Копировать</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="pt-2 border-t border-white/5 flex items-center justify-between">
+        <a id="openDirectLink" href="https://easy-bikes-cough.loca.lt" target="_blank" rel="noopener noreferrer" class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 hover:underline">
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          <span data-i18n="openInBrowserLink">Открыть в браузере</span>
+        </a>
+        <button id="closeQrModalFooterBtn" class="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition active:scale-95">
+          <span data-i18n="closeBtn">Закрыть</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- APPLICATION SCRIPT -->
+  <script src="app.js?v=2.3"></script>
+</body>
+</html>
